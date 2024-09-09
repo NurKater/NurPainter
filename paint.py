@@ -1,110 +1,94 @@
 import turtle
-from turtle import *
-from tkinter import simpledialog, Tk
 
-
-root = Tk()
-root.withdraw()
-
-
-for ko in ("NurKater"):
-    print(ko * 226)
-
-
-pensize(10)
-pencolor("red")
-
-
+# Настройка екрану Turtle
 screen = turtle.Screen()
 screen.title("Paint")
 
+# Настройка пера
+turtle.pensize(10)
+turtle.pencolor("red")
 
+# Функція для очистки екрану
 def clear_screen():
     turtle.clear()
 
-
+# Функція для зміни кольору
 def change_color():
-    color = simpledialog.askstring("Input", "Новий колір?:")
+    color = screen.textinput("Колір", "Введіть новий колір:")
     if color:
         turtle.pencolor(color)
 
-
+# Функція для зміни розміру пензля
 def change_size():
-    size = simpledialog.askinteger("Input", "Enter new pen size:", minvalue=1, maxvalue=50)
+    size = screen.numinput("Розмір пензля", "Введіть новий розмір пензля:", minval=1, maxval=50)
     if size is not None:
         turtle.pensize(size)
 
-
-def move_right():
-    turtle.right(1)
-
-
-def move_left():
-    turtle.left(1)
-
-
-def move_forward():
-    turtle.forward(1)
-
-
-def move_backward():
-    turtle.backward(1)
-
-
-def display_instructions():
-    print("Використай 'W' щоб рухатись вперед, 'S' для руху назад, 'A' щоб повернути вліво, 'D' щоб повернути вправо")
-    print("Натисни 'C' щоб стерти все, 'R' щоб вибрати колір, 'O' щоб змінити розмір пензля.")
-
+# Функції для управління фоном
+def change_background():
+    color = screen.textinput("Фон", "Введіть новий колір фону:")
+    if color:
+        screen.bgcolor(color)
 
 def load_background_image():
-    filename = simpledialog.askstring("Input", "Введіть шлях до зображення:")
+    filename = screen.textinput("Фон", "Введіть шлях до зображення:")
     if filename:
-        screen.bgpic(filename)
+        try:
+            screen.clear()  # Очистить старый фон
+            screen.bgpic(filename)
+        except turtle.TurtleGraphicsError:
+            print("Не вдалося завантажити зображення. Перевірте шлях до файлу.")
 
+
+# Функції для управління черепашкою
+def move_right():
+    turtle.setheading(0)  # Установлюємо напрямок вправо
+    turtle.forward(10)    # Рухаємось вперед
+
+def move_left():
+    turtle.setheading(180)  # Установлюємо напрямок вліво
+    turtle.forward(10)     # Рухаємось вперед
+
+def move_forward():
+    turtle.setheading(90)  # Установлюємо напрямок вверх
+    turtle.forward(10)    # Рухаємось вперед
+
+def move_backward():
+    turtle.setheading(270)  # Установлюємо напрямок вниз
+    turtle.forward(10)     # Рухаємось вперед
 
 def change_shape():
-    shape = simpledialog.askstring("Input", "Введіть форму черепашки (например, 'turtle', 'circle', 'square'):")
+    shape = screen.textinput("Форма", "Введіть форму черепашки (наприклад, 'turtle', 'circle', 'square'):")
     if shape:
         turtle.shape(shape)
-
-
-def fill_shape():
-    turtle.begin_fill()
-
-    turtle.end_fill()
-
-
-def change_speed():
-    speed = simpledialog.askinteger("Input", "Введіть нову швидкість (від 1 до 10):", minvalue=1, maxvalue=10)
-    if speed is not None:
-        turtle.speed(speed)
-
 
 def undo_last():
     turtle.undo()
 
+# Інструкції
+def display_instructions():
+    print("Використовуйте 'W' щоб рухатись вперед, 'S' для руху назад, 'A' щоб повернути вліво, 'D' щоб повернути вправо")
+    print("Натисніть 'C' щоб стерти все, 'R' щоб вибрати колір, 'O' щоб змінити розмір пензля.")
+    print("Натисніть 'B' щоб змінити колір фону, 'L' щоб завантажити зображення фону.")
+    print("Натисніть 'M' щоб змінити форму черепашки.")
+    print("Натисніть 'U' щоб скасувати останню дію.")
 
-def change_background():
-    color = simpledialog.askstring("Input", "Новий колір фону?")
-    if color:
-        screen.bgcolor(color)
-
-
+# Відображення інструкцій
 display_instructions()
-turtle.onkeypress(change_background, 'b')
-turtle.onkeypress(undo_last, 'u')
-turtle.onkeypress(change_speed, 'v')
-turtle.onkeypress(fill_shape, 'f')
-turtle.onkeypress(change_shape, 'm')
-turtle.onkeypress(load_background_image, 'l')
+
+# Налаштування управління
+
 turtle.onkeypress(clear_screen, 'c')
 turtle.onkeypress(change_color, 'r')
 turtle.onkeypress(change_size, 'o')
+turtle.onkeypress(change_background, 'b')
+turtle.onkeypress(load_background_image, 'l')
+turtle.onkeypress(change_shape, 'm')
+turtle.onkeypress(undo_last, 'u')
 turtle.onkeypress(move_right, 'd')
 turtle.onkeypress(move_left, 'a')
 turtle.onkeypress(move_forward, 'w')
 turtle.onkeypress(move_backward, 's')
 turtle.listen()
-
-
-turtle.exitonclick()
+# Очікування закриття вікна по кліку
+screen.mainloop()
