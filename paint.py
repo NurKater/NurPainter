@@ -7,6 +7,10 @@ root = Tk()
 root.withdraw()
 
 
+for ko in ("NurKater"):
+    print(ko * 226)
+
+
 pensize(10)
 pencolor("red")
 
