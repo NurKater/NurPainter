@@ -1,94 +1,96 @@
-import turtle
+from tkinter import *
+from PIL import Image, ImageDraw
+from random import randint
+from tkinter import colorchooser, messagebox
 
-# Настройка екрану Turtle
-screen = turtle.Screen()
-screen.title("Paint")
+def draw(event):
+    x1, y1 = (event.x - brush_size), (event.y - brush_size)
+    x2, y2 = (event.x + brush_size), (event.y + brush_size)
+    canvas.create_oval(x1, y1, x2, y2, fill=color, width=0)
+    draw_img.ellipse((x1, y1, x2, y2), fill=color)
 
-# Настройка пера
-turtle.pensize(10)
-turtle.pencolor("red")
+def chooseColor():
+    global color
+    (rgb, hx) = colorchooser.askcolor()
+    color = hx
+    color_lab['bg'] = hx
 
-# Функція для очистки екрану
-def clear_screen():
-    turtle.clear()
+def pour():
+    canvas.delete('all')
+    canvas['bg'] = color
+    draw_img.rectangle((0, 0, 1280, 720), width=0, fill=color)
 
-# Функція для зміни кольору
-def change_color():
-    color = screen.textinput("Колір", "Введіть новий колір:")
-    if color:
-        turtle.pencolor(color)
+def clear_canvas():
+    canvas.delete('all')
+    canvas['bg'] = 'white'
+    draw_img.rectangle((0, 0, 1280, 720), width=0, fill='white')
 
-# Функція для зміни розміру пензля
-def change_size():
-    size = screen.numinput("Розмір пензля", "Введіть новий розмір пензля:", minval=1, maxval=50)
-    if size is not None:
-        turtle.pensize(size)
+def save_img():
+    filename = f'image_{randint(0, 10000)}.png'
+    image1.save(filename)
+    messagebox.showinfo('Сохранение', f'Сохранено под названием {filename}')
 
-# Функції для управління фоном
-def change_background():
-    color = screen.textinput("Фон", "Введіть новий колір фону:")
-    if color:
-        screen.bgcolor(color)
+def popup(event):
+    global x, y
+    x = event.x
+    y = event.y
+    menu.post(event.x_root, event.y_root)
 
-def load_background_image():
-    filename = screen.textinput("Фон", "Введіть шлях до зображення:")
-    if filename:
-        try:
-            screen.clear()  # Очистить старый фон
-            screen.bgpic(filename)
-        except turtle.TurtleGraphicsError:
-            print("Не вдалося завантажити зображення. Перевірте шлях до файлу.")
+def square():
+    canvas.create_rectangle(x, y, x + brush_size, y + brush_size, fill=color, width=0)
+    draw_img.rectangle((x, y, x + brush_size, y + brush_size), fill=color)
 
+def circle():
+    canvas.create_oval(x, y, x + brush_size, y + brush_size, fill=color, width=0)
+    draw_img.ellipse((x, y, x + brush_size, y + brush_size), fill=color)
 
-# Функції для управління черепашкою
-def move_right():
-    turtle.setheading(0)  # Установлюємо напрямок вправо
-    turtle.forward(10)    # Рухаємось вперед
+def select(val):
+    global brush_size
+    brush_size = int(val)
 
-def move_left():
-    turtle.setheading(180)  # Установлюємо напрямок вліво
-    turtle.forward(10)     # Рухаємось вперед
+x = 0
+y = 0
 
-def move_forward():
-    turtle.setheading(90)  # Установлюємо напрямок вверх
-    turtle.forward(10)    # Рухаємось вперед
+root = Tk()
+root.title("Paint")
+root.geometry('1980x1080')
+root.resizable(0, 0)
 
-def move_backward():
-    turtle.setheading(270)  # Установлюємо напрямок вниз
-    turtle.forward(10)     # Рухаємось вперед
+brush_size = 10
+color = 'red'
 
-def change_shape():
-    shape = screen.textinput("Форма", "Введіть форму черепашки (наприклад, 'turtle', 'circle', 'square'):")
-    if shape:
-        turtle.shape(shape)
+root.columnconfigure(6, weight=1)
+root.rowconfigure(2, weight=1)
 
-def undo_last():
-    turtle.undo()
+canvas = Canvas(root, bg='white')
+canvas.grid(row=2, column=0, columnspan=7, padx=5, pady=5, sticky=E + W + S + N)
 
-# Інструкції
-def display_instructions():
-    print("Використовуйте 'W' щоб рухатись вперед, 'S' для руху назад, 'A' щоб повернути вліво, 'D' щоб повернути вправо")
-    print("Натисніть 'C' щоб стерти все, 'R' щоб вибрати колір, 'O' щоб змінити розмір пензля.")
-    print("Натисніть 'B' щоб змінити колір фону, 'L' щоб завантажити зображення фону.")
-    print("Натисніть 'M' щоб змінити форму черепашки.")
-    print("Натисніть 'U' щоб скасувати останню дію.")
+canvas.bind('<B1-Motion>', draw)
+canvas.bind("<Button-3>", popup)
 
-# Відображення інструкцій
-display_instructions()
+menu = Menu(root, tearoff=0)
+menu.add_command(label="Квадрат", command=square)
+menu.add_command(label="Круг", command=circle)
 
-# Налаштування управління
+image1 = Image.new('RGB', (1280, 720), 'white')
+draw_img = ImageDraw.Draw(image1)
 
-turtle.onkeypress(clear_screen, 'c')
-turtle.onkeypress(change_color, 'r')
-turtle.onkeypress(change_size, 'o')
-turtle.onkeypress(change_background, 'b')
-turtle.onkeypress(load_background_image, 'l')
-turtle.onkeypress(change_shape, 'm')
-turtle.onkeypress(undo_last, 'u')
-turtle.onkeypress(move_right, 'd')
-turtle.onkeypress(move_left, 'a')
-turtle.onkeypress(move_forward, 'w')
-turtle.onkeypress(move_backward, 's')
-turtle.listen()
-# Очікування закриття вікна по кліку
-screen.mainloop()
+Label(root, text='Параметры:').grid(row=0, column=0, padx=6)
+
+Button(root, text='Выбрать цвет', width=11, command=chooseColor).grid(row=0, column=1, padx=6)
+
+color_lab = Label(root, bg=color, width=10)
+color_lab.grid(row=0, column=2, padx=6)
+
+v = IntVar(value=10)
+Scale(root, variable=v, from_=1, to=100, orient=HORIZONTAL, command=select).grid(row=0, column=3, padx=6)
+
+Label(root, text="Действия:").grid(row=1, column=0, padx=6)
+
+Button(root, text='Заливка', width=10, command=pour).grid(row=1, column=1)
+
+Button(root, text='Очистить', width=10, command=clear_canvas).grid(row=1, column=2)
+
+Button(root, text='Сохранить', width=10, command=save_img).grid(row=1, column=6)
+
+root.mainloop()
