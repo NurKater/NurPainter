@@ -53,11 +53,50 @@ def move_backward():
 
 def display_instructions():
     print("Використай 'W' щоб рухатись вперед, 'S' для руху назад, 'A' щоб повернути вліво, 'D' щоб повернути вправо")
-    print(
-        "Натисни 'C' щоб стерти все, 'R' щоб вибрати колір, 'O' щоб змінити розмір пензля.")
+    print("Натисни 'C' щоб стерти все, 'R' щоб вибрати колір, 'O' щоб змінити розмір пензля.")
+
+
+def load_background_image():
+    filename = simpledialog.askstring("Input", "Введіть шлях до зображення:")
+    if filename:
+        screen.bgpic(filename)
+
+
+def change_shape():
+    shape = simpledialog.askstring("Input", "Введіть форму черепашки (например, 'turtle', 'circle', 'square'):")
+    if shape:
+        turtle.shape(shape)
+
+
+def fill_shape():
+    turtle.begin_fill()
+
+    turtle.end_fill()
+
+
+def change_speed():
+    speed = simpledialog.askinteger("Input", "Введіть нову швидкість (від 1 до 10):", minvalue=1, maxvalue=10)
+    if speed is not None:
+        turtle.speed(speed)
+
+
+def undo_last():
+    turtle.undo()
+
+
+def change_background():
+    color = simpledialog.askstring("Input", "Новий колір фону?")
+    if color:
+        screen.bgcolor(color)
 
 
 display_instructions()
+turtle.onkeypress(change_background, 'b')
+turtle.onkeypress(undo_last, 'u')
+turtle.onkeypress(change_speed, 'v')
+turtle.onkeypress(fill_shape, 'f')
+turtle.onkeypress(change_shape, 'm')
+turtle.onkeypress(load_background_image, 'l')
 turtle.onkeypress(clear_screen, 'c')
 turtle.onkeypress(change_color, 'r')
 turtle.onkeypress(change_size, 'o')
